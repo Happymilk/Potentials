@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Windows.Forms;
 using System.Drawing;
 
 namespace WindowsFormsApplication1
@@ -22,35 +22,42 @@ namespace WindowsFormsApplication1
         {
             return FreeKoef + XKoef * point.X + YKoef * point.Y + XyKoef * point.X * point.Y;
         }
-
         public double GetY(double x)
         {
             return -(XKoef * x + FreeKoef) / (XyKoef * x + YKoef);
         }
-
         public override string ToString()
         {
+            string s;
+
             if (XyKoef != 0)
-                return "y=(" + -XKoef + "*x" + (-FreeKoef < 0 ? "" : "+") + -FreeKoef + ")/(" +
-                       XyKoef + "*x" + (YKoef < 0 ? "" : "+") + YKoef + ")";
+            {
+                s = "y=(" + -XKoef + "*x";
+                if (-FreeKoef < 0)
+                    s += "";
+                else
+                    s += "+";
+                s += -FreeKoef + ")/(" + XyKoef + "*x";
+                if (YKoef < 0)
+                    s += "";
+                else
+                    s += "+";
+                s += YKoef + ")";
+                return s;
+            }
+
             if (YKoef != 0)
             {
-                return "y=" + -(double)XKoef / YKoef + "*x" +
-                       (-(double)FreeKoef / YKoef < 0 ? "" : "+") + -(double)FreeKoef / YKoef;
+                s = "y=" + -(double)XKoef / YKoef + "*x";
+                if (-(double)FreeKoef / YKoef < 0)
+                    s += "";
+                else
+                    s += "+";
+                s += -(double)FreeKoef / YKoef;
+                return s;
             }
+
             return "x=" + -(double)FreeKoef / XKoef;
-        }
-
-        public static Function operator +(Function first, Function second)
-        {
-            return new Function(first.XKoef + second.XKoef, first.YKoef + second.YKoef,
-                first.XyKoef + second.XyKoef, first.FreeKoef + second.FreeKoef);
-        }
-
-        public static Function operator *(int koef, Function function)
-        {
-            return new Function(koef * function.XKoef, koef * function.YKoef, koef * function.XyKoef,
-                koef * function.FreeKoef);
         }
     }
 
@@ -59,6 +66,18 @@ namespace WindowsFormsApplication1
         private const int classCount = 2;
         private const int iterationsCount = 50;
         private int correction;
+        public bool Check { get; set; }
+
+        public static Function Sum(Function first, Function second)
+        {
+            return new Function(first.XKoef + second.XKoef, first.YKoef + second.YKoef,
+                first.XyKoef + second.XyKoef, first.FreeKoef + second.FreeKoef);
+        }
+        public static Function Mul(int koef, Function function)
+        {
+            return new Function(koef * function.XKoef, koef * function.YKoef, koef * function.XyKoef,
+                koef * function.FreeKoef);
+        }
 
         public Function GetFunction(Point[][] teachingPoints)
         {
@@ -66,11 +85,17 @@ namespace WindowsFormsApplication1
             bool nextIteration = true;
             int iterationNumber = 0;
             correction = 1;
+            Check = true;
 
             while (nextIteration && iterationNumber < iterationsCount)
             {
                 iterationNumber++;
                 nextIteration = DoOneIteration(teachingPoints, ref result);
+            }
+            if (iterationNumber == iterationsCount)
+            {
+                MessageBox.Show("Невозможно построить разделяющую функцию");
+                Check = false;
             }
             return result;
         }
@@ -83,32 +108,39 @@ namespace WindowsFormsApplication1
             {
                 for (int i = 0; i < teachingPoints[classNumber].Length; i++)
                 {
-                    result += correction*PartFunction(teachingPoints[classNumber][i]);
+                    result = Sum(result, Mul(correction,PartFunction(teachingPoints[classNumber][i])));
+                    
                     int index = (i + 1)%teachingPoints[classNumber].Length;
-                    int nextClassNumber = index == 0 ? (classNumber + 1)%classCount : classNumber;
+                    int nextClassNumber;
+
+                    if (index == 0)
+                        nextClassNumber = (classNumber + 1) % classCount;
+                    else
+                        nextClassNumber = classNumber;
+
                     Point nextPoint = teachingPoints[nextClassNumber][index];
+
                     correction = GetNewCorrection(nextPoint, result, nextClassNumber);
-                    if (correction != 0) nextIteration = true;
+                    
+                    if (correction != 0) 
+                        nextIteration = true;
                 }
             }
-
             return nextIteration;
         }
 
         private int GetNewCorrection(Point nextPoint, Function result, int nextClassNumber)
         {
             int functionValue = result.GetValue(nextPoint);
+
             if (functionValue <= 0 && nextClassNumber == 0)
-            {
                 return 1;
-            }
+
             if (functionValue > 0 && nextClassNumber == 1)
-            {
                 return -1;
-            }
+
             return 0;
         }
-
 
         private Function PartFunction(Point point)
         {
