@@ -11,18 +11,20 @@ namespace WindowsFormsApplication1
         public Function separetFunction = null;
         private List<Point>[] points = new List<Point>[2];
         private double step;
+        Graphics graphics;
 
         public Form1()
         {
             points[0] = new List<Point>();
             points[1] = new List<Point>();
-            InitializeComponent();      
+            InitializeComponent();
+            graphics = pictureBox1.CreateGraphics();
         }
 
         private void teachingButton_Click(object sender, EventArgs e)
         {         
             step = pictureBox1.Height / 20;
-            var potintials = new Potintials();
+            var potintials = new Potentials();
             var teaching = new Point[2][];
 
             teaching[0] = new Point[2];
@@ -38,17 +40,12 @@ namespace WindowsFormsApplication1
             points[1].Add(teaching[1][1]);
 
             separetFunction = potintials.GetFunction(teaching);
-            MessageBox.Show("Разделяющая функция: " + separetFunction.ToString());
+            label14.Text = "Разделяющая функция: " + separetFunction.ToString();
 
-            var bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-            using (Graphics graphics = Graphics.FromImage(bitmap) )
-            {
-                graphics.Clear(Color.White);
-                DrawGraph(graphics);
-                DrawEdges(graphics);
-                DrawPoints(graphics, teaching);
-            }
-            pictureBox1.Image = bitmap;
+            graphics.Clear(Color.Black);
+            DrawGraph(graphics);
+            DrawEdges(graphics);
+            DrawPoints(graphics, teaching);
         }
 
         private void DrawPoints(Graphics graphics, Point[][] teaching)
@@ -60,13 +57,13 @@ namespace WindowsFormsApplication1
 
         private void DrawEdges(Graphics graphics)
         {
-            graphics.DrawLine(Pens.Black, 0, pictureBox1.Height/2, pictureBox1.Width, pictureBox1.Height/2);
-            graphics.DrawLine(Pens.Black, pictureBox1.Width/2, 0, pictureBox1.Width/2, pictureBox1.Height);
+            graphics.DrawLine(Pens.White, 0, pictureBox1.Height/2, pictureBox1.Width, pictureBox1.Height/2);
+            graphics.DrawLine(Pens.White, pictureBox1.Width/2, 0, pictureBox1.Width/2, pictureBox1.Height);
         }
 
         private void DrawGraph(Graphics graphics)
         {
-            Pen graphPen = new Pen(Color.Red,2);
+            Pen graphPen = new Pen(Color.White,4);
 
             var prevPoint = new Point(pictureBox1.Width/2 + (int) (-pictureBox1.Width/2*step),
                 pictureBox1.Height/2 - (int) (separetFunction.GetY(-pictureBox1.Width/2/step)*step));
@@ -75,24 +72,19 @@ namespace WindowsFormsApplication1
                 double y = separetFunction.GetY(x/step);
                 var nextPoint = new Point((int) (pictureBox1.Width/2 + x),
                     (int) (pictureBox1.Height/2 - y*step));
-                try
+
+                if (Math.Abs(nextPoint.Y - prevPoint.Y) < pictureBox1.Height)
                 {
-                    if (Math.Abs(nextPoint.Y - prevPoint.Y) < pictureBox1.Height)
-                    {
-                        graphics.DrawLine((Pen) graphPen, prevPoint, nextPoint);
-                    }
+                    graphics.DrawLine((Pen) graphPen, prevPoint, nextPoint);
                 }
-                catch (OverflowException)
-                {
-                    ;
-                }
+
                 prevPoint = nextPoint;
             }
         }
 
         private void DrawPoint(Graphics graphics, Point point, int classNumber)
         {
-            graphics.FillEllipse(new SolidBrush(classNumber == 0 ? Color.ForestGreen: Color.Blue),
+            graphics.FillEllipse(new SolidBrush(classNumber == 0 ? Color.Lime: Color.LimeGreen),
                 (int) (pictureBox1.Width/2 + point.X*step - 4),
                 (int) (pictureBox1.Height/2 - point.Y*step - 4), 9, 9);
         }
@@ -129,19 +121,22 @@ namespace WindowsFormsApplication1
             }
             return false;
         }
-        private void testButton_Click(object sender, EventArgs e)
+
+        private void button2_Click(object sender, EventArgs e)
         {
             var testPoint = new Point((int)testXNumericUpDown.Value, (int)testYNumericUpDown.Value);
-            int classNumber = separetFunction.GetValue(testPoint) >= 0 ? 0 : 1;
+            int classNumber;
+
+            if (separetFunction.GetValue(testPoint) >= 0)
+                classNumber = 0;
+            else 
+                classNumber = 1;
+
             points[classNumber].Add(testPoint);
             MessageBox.Show("Класс " + (classNumber + 1));
-            var bitmap = new Bitmap(pictureBox1.Image);
-            pictureBox1.Image.Dispose();
-            using (Graphics graphics = Graphics.FromImage(bitmap))
-            {
-                DrawPoint(graphics,testPoint,classNumber);
-            }
-            pictureBox1.Image = bitmap;
+
+            DrawPoint(graphics,testPoint,classNumber);
+
         }
     }
 }

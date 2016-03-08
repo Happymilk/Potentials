@@ -55,6 +55,7 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.y22NumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.x22NumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.y21NumericUpDown)).BeginInit();
@@ -316,10 +317,10 @@
             this.teachingButton.UseVisualStyleBackColor = true;
             this.teachingButton.Click += new System.EventHandler(this.teachingButton_Click);
             // 
-            // pictureBox
+            // pictureBox1
             // 
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox";
+            this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(503, 400);
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
@@ -390,7 +391,7 @@
             this.testButton.TabIndex = 6;
             this.testButton.Text = "Классификация";
             this.testButton.UseVisualStyleBackColor = true;
-            this.testButton.Click += new System.EventHandler(this.testButton_Click);
+            this.testButton.Click += new System.EventHandler(this.button2_Click);
             // 
             // label11
             // 
@@ -404,7 +405,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(12, 474);
+            this.label12.Location = new System.Drawing.Point(12, 479);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(50, 13);
             this.label12.TabIndex = 8;
@@ -413,17 +414,26 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(262, 403);
+            this.label13.Location = new System.Drawing.Point(260, 436);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(34, 13);
             this.label13.TabIndex = 9;
             this.label13.Text = "Тест:";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(260, 406);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(0, 13);
+            this.label14.TabIndex = 10;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(504, 560);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label11);
@@ -499,6 +509,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
     }
 }
 

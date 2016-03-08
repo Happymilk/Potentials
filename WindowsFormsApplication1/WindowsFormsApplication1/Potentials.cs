@@ -54,7 +54,7 @@ namespace WindowsFormsApplication1
         }
     }
 
-    public class Potintials
+    public class Potentials
     {
         private const int classCount = 2;
         private const int iterationsCount = 50;
